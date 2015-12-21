@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	
+	<style type="text/css">
+		
+		td {
+			width: 20px;
+			height: 20px;
+		}	
+
+	</style>
+</head>
+<body>
+	
+	<script src="//code.jquery.com/jquery-1.11.3.js"></script>
+
+	<script type="text/javascript" src="game/block.js"></script>
+	<script type="text/javascript" src="game/piece.js"></script>
+	<script type="text/javascript" src="game/pieceContainer.js"></script>
+	<script type="text/javascript" src="util/grid.js"></script>
+	<script type="text/javascript" src="util/cycle.js"></script>
+	<script type="text/javascript">
+		
+		var pieces;
+
+		function parsePieces(data) {
+			var dict = Object.create(null);
+
+			Object.keys(data.pieces).forEach(function(name){
+				var piece = data.pieces[name].grid;
+				var rows = piece.length;
+				var cols = piece[0].length;
+
+				var grid = new Grid(cols, rows);
+
+				for (var i = piece.length - 1, row = 0; i >= 0; i--, row++) {
+					var line = piece[i].split('');
+
+					for(var col = 0; col < line.length; col++) {
+						grid.set(col, row, new Block(line[col] === 'x'))
+					}
+				}
+
+				dict[name] = new Piece(grid, data.pieces[name].color, name);
+			});
+
+			pieces = new PieceContainer(dict);
+		}
+
+		function paintPiece(name, piece) {
+			var pieceId = 'piece_' + name
+
+			var elem = $('#' + pieceId);
+
+			var table;
+
+			if(elem.length) {
+				table = elem.find('table');
+			} else {
+				var container = $('<div>').attr('id', pieceId).attr('data-piece', name);
+
+				table = toHtmlTable(piece.grid);
+				table.appendTo(container);
+
+				container.appendTo('body');
+			}
+
+			piece.grid.forEach(function(x, y, block) {
+				var td = $('td[data-col=' + x + '][data-row=' + y + ']', table);
+
+				td.css('background-color', block.isSolid ? piece.color : block.color);
+			});
+		}
+
+		$.get("pieces.json")
+			.done(parsePieces)
+			.done(function () {
+				pieces.forEach(paintPiece);
+
+				function step () {
+					pieces.forEach(paintPiece);
+
+					window.requestAnimationFrame(step);
+				}
+
+				window.requestAnimationFrame(step);
+			});
+
+		$(document).on('click', '[id^="piece"]', function() {
+			$this = $(this);
+
+			var name = $this.data('piece');
+
+			pieces.rotate(name, 'right');
+		});
+
+		function toHtmlTable(grid)
+		{
+			var $table = $('<table>');
+			var $body = $('<tbody>');
+
+			for(var row = grid._height - 1; row >= 0; row--) {
+				$body.append($('<tr>').data("row", row));
+			}
+
+			for(var col = 0; col < grid._height; col++) {
+				$.each($('tr', $body), function(idx, row) {
+					var $row = $(row);
+
+					$row.append($('<td>')
+						.attr("data-col", col)
+						.attr("data-row", $row.data("row")));
+				});
+			}
+
+			$body.appendTo($table);
+
+			return $table;
+		}
+
+	</script>
+</body>
+</html>
+
+
+
