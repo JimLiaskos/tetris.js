@@ -1,4 +1,4 @@
-function Block(isSolid) {
+function Block(isSolid, color) {
 	this.isSolid = isSolid;
-	this.color = 'grey'
+	this.color = color || 'grey'
 }

@@ -52,3 +52,12 @@ PieceContainer.prototype.rotate = function PieceContainer_rotate(name, dir) {
 PieceContainer.prototype.resetPiece = function PieceContainer_resetPiece(name) {
 	var p = this._pieces[name].state.reset();
 };
+
+PieceContainer.prototype.rndPiece = function() {
+	var names = Object.keys(this._pieces);
+
+	var rnd = getRandomInt(0, names.length - 1);
+
+	return this.getPiece(names[rnd]);
+};
+

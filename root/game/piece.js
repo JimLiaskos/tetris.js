@@ -5,8 +5,8 @@ function Piece(grid, color, name) {
 	}
 
 	this.grid = grid;
-	this.name = name;
 	this.color = color;
+	this.name = name;
 }
 
 Piece.prototype.clone = function Piece_clone() {

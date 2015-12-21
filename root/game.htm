@@ -6,8 +6,8 @@
 	<style type="text/css">
 		
 		td {
-			width: 20px;
-			height: 20px;
+			width: 15px;
+			height: 15px;
 		}	
 
 	</style>
@@ -22,8 +22,40 @@
 	<script type="text/javascript" src="util/grid.js"></script>
 	<script type="text/javascript" src="util/cycle.js"></script>
 	<script type="text/javascript">
+		'use strict;'
+
+		//var pieces;
+		function Tetris(options) {
+			// piece location
+			// piece container
+			// add listeners to controller
+		}
+
 		
-		var pieces;
+
+		$.get("pieces.json")
+			.then(parsePieces)
+			.then(initialize_game);
+
+		function initialize_game(pieceContainer) {
+			pieceContainer.forEach(paintPiece);
+
+			function step () {
+				pieceContainer.forEach(paintPiece);
+
+				window.requestAnimationFrame(step);
+			}
+
+			function rotate_random() {
+				var piece = pieceContainer.rndPiece();
+				pieceContainer.rotate(piece.name, 'right');
+
+				window.setTimeout(rotate_random, 400);
+			}
+
+			rotate_random();
+			step();
+		}
 
 		function parsePieces(data) {
 			var dict = Object.create(null);
@@ -46,7 +78,7 @@
 				dict[name] = new Piece(grid, data.pieces[name].color, name);
 			});
 
-			pieces = new PieceContainer(dict);
+			return new PieceContainer(dict);
 		}
 
 		function paintPiece(name, piece) {
@@ -73,28 +105,6 @@
 				td.css('background-color', block.isSolid ? piece.color : block.color);
 			});
 		}
-
-		$.get("pieces.json")
-			.done(parsePieces)
-			.done(function () {
-				pieces.forEach(paintPiece);
-
-				function step () {
-					pieces.forEach(paintPiece);
-
-					window.requestAnimationFrame(step);
-				}
-
-				window.requestAnimationFrame(step);
-			});
-
-		$(document).on('click', '[id^="piece"]', function() {
-			$this = $(this);
-
-			var name = $this.data('piece');
-
-			pieces.rotate(name, 'right');
-		});
 
 		function toHtmlTable(grid)
 		{
