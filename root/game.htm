@@ -14,48 +14,106 @@
 </head>
 <body>
 	
+	<div id="controls">
+		<a href="javascript:" class="left"> left ! </a> <br />
+		<a href="javascript:" class="right"> right ! </a> <br />
+		<a href="javascript:" class="descend"> go down ! </a> <br />
+		<a href="javascript:" class="reset"> reset ! </a> <br />
+		<a href="javascript:" class="rotate"> rotate ! </a>
+	</div>
+
 	<script src="//code.jquery.com/jquery-1.11.3.js"></script>
 
+	<script type="text/javascript" src="game/tetris.js"></script>
 	<script type="text/javascript" src="game/block.js"></script>
 	<script type="text/javascript" src="game/piece.js"></script>
+	<script type="text/javascript" src="game/tetris.js"></script>
+	<script type="text/javascript" src="game/controller.js"></script>
 	<script type="text/javascript" src="game/pieceContainer.js"></script>
 	<script type="text/javascript" src="util/grid.js"></script>
 	<script type="text/javascript" src="util/cycle.js"></script>
 	<script type="text/javascript">
 		'use strict;'
-
-		//var pieces;
-		function Tetris(options) {
-			// piece location
-			// piece container
-			// add listeners to controller
-		}
-
 		
+		var tetris 		= null; 
+		var controller 	= new Controller();
+		var setFrequency;
+
+		controller
+			.addOnMoveLeftListener(function(dtm) {
+
+				console.log("moved left - " + dtm);
+		})	.addOnMoveRightListener(function(dtm) {
+				
+				console.log("moved right - " + dtm);
+		})	.addOnRotateLeftListener(function(dtm) {
+				
+				console.log("rotate - " + dtm);
+		});
+
+		$(".left").click(function() {
+			controller.fireMoveLeftEvent();
+		});
+
+		$(".right").click(function() {
+			controller.fireMoveRightEvent();
+		});
+
+		$(".descend").click(function() {
+			controller.fireDescendEvent();
+		});
+
+		$(".rotate").click(function() {
+			controller.fireRotateLeftEvent();
+		});
+
+		$(".reset").click(function() {
+			tetris.reset();
+		});
 
 		$.get("pieces.json")
 			.then(parsePieces)
 			.then(initialize_game);
 
 		function initialize_game(pieceContainer) {
-			pieceContainer.forEach(paintPiece);
+			tetris = new Tetris({}, pieceContainer);
+
+			controller
+				.addOnRotateLeftListener(function() {
+					
+					pieceContainer.rotate(tetris.getPiece().name, 'left');	
+				}).addOnRotateRightListener(function () {
+
+					pieceContainer.rotate(tetris.getPiece().name, 'right');		
+				}).addOnMoveLeftListener(function () {
+
+					tetris.movePieceLeft();		
+				}).addOnMoveRightListener(function () {
+
+					tetris.movePieceRight();		
+				}).addOnDescendListener(function () {
+
+					tetris.round();
+				});
 
 			function step () {
-				pieceContainer.forEach(paintPiece);
+				paintTetris(tetris);
 
 				window.requestAnimationFrame(step);
 			}
 
-			function rotate_random() {
-				var piece = pieceContainer.rndPiece();
-				pieceContainer.rotate(piece.name, 'right');
-
-				window.setTimeout(rotate_random, 400);
-			}
-
-			rotate_random();
 			step();
-		}
+
+			setFrequency = function setFrequency(f) {
+				window.gravity && window.clearInterval(window.gravity);
+
+				tetris.frequency = f;
+
+				window.gravity = setInterval(function() {
+					controller.fireDescendEvent();
+				}, parseInt( (1 / tetris.frequency) * 1000) );
+			}
+		};
 
 		function parsePieces(data) {
 			var dict = Object.create(null);
@@ -81,6 +139,45 @@
 			return new PieceContainer(dict);
 		}
 
+		function paintTetris(tetris) {
+			var table;
+
+			var elem = $('#tetris');
+
+			if(elem.length) {
+				table = elem.find('table');
+			} else {
+				var container = $('<div>').attr('id', "tetris");
+
+				table = toHtmlTable(tetris.well);
+				table.appendTo(container);
+
+				container.appendTo('body');
+			}
+
+			var piece = tetris.getPiece();
+			var location = tetris.getPieceLocation();
+
+			tetris.well.forEach(function(x, y, block) {
+				var td = $('td[data-col=' + x + '][data-row=' + y + ']', table);
+
+				td.css('background-color', block.color);
+			});
+
+			piece.grid.forEach(function(x, y, block) {
+				x = location.x + x;
+				y = location.y + y;
+
+				var td = $('td[data-col=' + x + '][data-row=' + y + ']', table);
+
+				if (td.length && block.isSolid ) {
+					td.css('background-color', piece.color);
+				}
+			});
+
+			return table;
+		};
+
 		function paintPiece(name, piece) {
 			var pieceId = 'piece_' + name
 
@@ -104,18 +201,18 @@
 
 				td.css('background-color', block.isSolid ? piece.color : block.color);
 			});
-		}
+		};
 
 		function toHtmlTable(grid)
 		{
 			var $table = $('<table>');
 			var $body = $('<tbody>');
 
-			for(var row = grid._height - 1; row >= 0; row--) {
+			for(var row = grid.height - 1; row >= 0; row--) {
 				$body.append($('<tr>').data("row", row));
 			}
 
-			for(var col = 0; col < grid._height; col++) {
+			for(var col = 0; col < grid.width; col++) {
 				$.each($('tr', $body), function(idx, row) {
 					var $row = $(row);
 
@@ -128,7 +225,7 @@
 			$body.appendTo($table);
 
 			return $table;
-		}
+		};
 
 	</script>
 </body>

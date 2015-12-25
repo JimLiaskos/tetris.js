@@ -45,7 +45,7 @@ PieceContainer.prototype.rotate = function PieceContainer_rotate(name, dir) {
 	} else if (dir == 'left') {
 		p.state.prev();
 	} else {
-		throw "unknown direction: " + dir;
+		throw "unknown direction: '" + dir + "'";
 	}
 };
 
@@ -58,6 +58,5 @@ PieceContainer.prototype.rndPiece = function() {
 
 	var rnd = getRandomInt(0, names.length - 1);
 
-	return this.getPiece(names[rnd]);
+	return names[rnd];
 };
-
