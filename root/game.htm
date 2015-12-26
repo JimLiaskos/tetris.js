@@ -1,39 +1,43 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-	<title></title>
-	
-	<style type="text/css">
-		
-		td {
-			width: 15px;
-			height: 15px;
-		}	
+    <title></title>
 
-	</style>
+    <style type="text/css">
+        td {
+            width: 15px;
+            height: 15px;
+        }
+    </style>
 </head>
+
 <body>
-	
-	<div id="controls">
-		<a href="javascript:" class="left"> left ! </a> <br />
-		<a href="javascript:" class="right"> right ! </a> <br />
-		<a href="javascript:" class="descend"> go down ! </a> <br />
-		<a href="javascript:" class="reset"> reset ! </a> <br />
-		<a href="javascript:" class="rotate"> rotate ! </a>
-	</div>
 
-	<script src="//code.jquery.com/jquery-1.11.3.js"></script>
+    <div id="controls">
+        <a href="javascript:" class="left"> left ! </a>
+        <br />
+        <a href="javascript:" class="right"> right ! </a>
+        <br />
+        <a href="javascript:" class="descend"> go down ! </a>
+        <br />
+        <a href="javascript:" class="reset"> reset ! </a>
+        <br />
+        <a href="javascript:" class="rotate"> rotate ! </a>
+    </div>
 
-	<script type="text/javascript" src="game/tetris.js"></script>
-	<script type="text/javascript" src="game/block.js"></script>
-	<script type="text/javascript" src="game/piece.js"></script>
-	<script type="text/javascript" src="game/tetris.js"></script>
-	<script type="text/javascript" src="game/controller.js"></script>
-	<script type="text/javascript" src="game/pieceContainer.js"></script>
-	<script type="text/javascript" src="util/grid.js"></script>
-	<script type="text/javascript" src="util/cycle.js"></script>
-	<script type="text/javascript">
-		'use strict;'
+    <script src="//code.jquery.com/jquery-1.11.3.js"></script>
+
+    <script type="text/javascript" src="game/tetris.js"></script>
+    <script type="text/javascript" src="game/block.js"></script>
+    <script type="text/javascript" src="game/piece.js"></script>
+    <script type="text/javascript" src="game/tetris.js"></script>
+    <script type="text/javascript" src="game/controller.js"></script>
+    <script type="text/javascript" src="game/pieceContainer.js"></script>
+    <script type="text/javascript" src="util/grid.js"></script>
+    <script type="text/javascript" src="util/cycle.js"></script>
+    <script type="text/javascript">
+        'use strict;'
 		
 		var tetris 		= null; 
 		var controller 	= new Controller();
@@ -226,10 +230,7 @@
 
 			return $table;
 		};
-
-	</script>
+    </script>
 </body>
+
 </html>
-
-
-
