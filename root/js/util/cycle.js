@@ -4,6 +4,12 @@ define(function () {
     function Cycle(count) {
         this._curr = 0;
         this._count = count;
+        
+        Object.defineProperty(this, 'curr', {
+            get: function() {
+                return this._curr;
+            }
+        });
     }
 
     Cycle.prototype = {

@@ -13,7 +13,7 @@ define(function () {
     Piece.prototype = {
         constructor: Piece,
 
-        Piece_clone: function Piece_clone() {
+        clone: function Piece_clone() {
             return new Piece(this.grid.clone(), this.color, this.name);
         }
     };

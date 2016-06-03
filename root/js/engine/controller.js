@@ -1,5 +1,5 @@
 define(function (require) {
-    var events = require('events');
+    var events = require('engine/events');
 
     function Controller() {
         this._callbacks = Object.create(null);
